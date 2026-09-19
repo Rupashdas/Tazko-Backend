@@ -17,6 +17,14 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('avatar')->nullable();
+            $table->string('title')->nullable();
+            $table->string('phone', 20)->nullable();
+            $table->string('bio', 500)->nullable();
+            $table->string('location')->nullable();
+            // Switches off the whole account. Leaving one workspace is a
+            // membership matter (workspace_members.is_active), not this.
+            $table->boolean('is_active')->default(true);
             $table->rememberToken();
             $table->timestamps();
         });

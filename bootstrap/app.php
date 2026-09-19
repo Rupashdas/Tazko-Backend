@@ -16,6 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         // The SPA authenticates with Sanctum's cookie session rather than a
         // bearer token, so a token never has to live in localStorage.
         $middleware->statefulApi();
+
+        $middleware->alias([
+            'active' => \App\Http\Middleware\EnsureUserIsActive::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(

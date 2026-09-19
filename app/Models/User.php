@@ -2,31 +2,49 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Database\Factories\UserFactory;
-use Illuminate\Database\Eloquent\Attributes\Fillable;
-use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
+use Laravel\Sanctum\HasApiTokens;
 
-#[Fillable(['name', 'email', 'password'])]
-#[Hidden(['password', 'remember_token'])]
-class User extends Authenticatable
-{
+class User extends Authenticatable implements MustVerifyEmail {
     /** @use HasFactory<UserFactory> */
-    use HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable;
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
-    {
+    // `is_active` is deliberately not fillable: nobody switches an account
+    // off by posting a form field.
+    protected $fillable = ['name', 'email', 'password', 'avatar', 'title', 'phone', 'bio', 'location'];
+
+    protected $hidden = ['password', 'remember_token'];
+
+    // Mirrors the column default. Without it a freshly created model has
+    // is_active = null until reloaded, and the `active` check reads that as
+    // a deactivated account.
+    protected $attributes = ['is_active' => true];
+
+    protected function casts(): array {
         return [
             'email_verified_at' => 'datetime',
-            'password' => 'hashed',
+            'password'          => 'hashed',
+            'is_active'         => 'boolean',
         ];
+    }
+
+    protected static function booted(): void {
+        // Every account has preferences. Creating them here means no path
+        // (sign up, invitation, seeder, factory) can forget to.
+        static::created(fn (User $user) => $user->preference()->create());
+    }
+
+    public function preference(): HasOne {
+        return $this->hasOne(UserPreference::class);
+    }
+
+    public function avatarUrl(): ?string {
+        return $this->avatar ? Storage::disk('public')->url($this->avatar) : null;
     }
 }
