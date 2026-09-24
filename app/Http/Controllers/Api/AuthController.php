@@ -29,7 +29,7 @@ class AuthController extends Controller {
 
     public function login(LoginRequest $request): JsonResponse {
         if (! Auth::attempt($request->only('email', 'password'), $request->boolean('remember'))) {
-            // One message for a wrong password and an unknown email alike.
+
             throw ValidationException::withMessages([
                 'email' => 'These credentials do not match our records.',
             ]);
@@ -44,7 +44,6 @@ class AuthController extends Controller {
             ], 403);
         }
 
-        // A new session id after login stops session fixation.
         $request->session()->regenerate();
 
         return (new UserResource(Auth::user()->load('preference')))->response();

@@ -19,7 +19,7 @@ class UserResource extends JsonResource {
             'location'       => $this->location,
             'preferences'    => $this->whenLoaded(
                 'preference',
-                fn () => new UserPreferenceResource($this->preference),
+                fn() => new UserPreferenceResource($this->preference),
             ),
         ];
     }
