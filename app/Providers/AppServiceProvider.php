@@ -13,7 +13,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // One per request (and per queued job), never shared between them.
+        $this->app->scoped(\App\Support\CurrentWorkspace::class);
     }
 
     /**
