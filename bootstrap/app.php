@@ -18,16 +18,8 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->statefulApi();
 
         $middleware->alias([
-            'active'    => \App\Http\Middleware\EnsureUserIsActive::class,
-            'workspace' => \App\Http\Middleware\ResolveWorkspace::class,
+            'active' => \App\Http\Middleware\EnsureUserIsActive::class,
         ]);
-
-        // Route model binding respects the workspace scope, so the workspace
-        // must be known before {role} and friends are looked up.
-        $middleware->prependToPriorityList(
-            before: \Illuminate\Routing\Middleware\SubstituteBindings::class,
-            prepend: \App\Http\Middleware\ResolveWorkspace::class,
-        );
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->shouldRenderJsonWhen(
