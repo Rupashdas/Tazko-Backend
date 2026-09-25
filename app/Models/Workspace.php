@@ -25,11 +25,11 @@ class Workspace extends Model {
     }
 
     /** Validation for a slug someone typed. */
-    public static function slugRules(): array {
+    public static function slugRules(?int $ignoreId = null): array {
         return [
             'string', 'min:3', 'max:60', 'regex:/^[a-z0-9]+(?:-[a-z0-9]+)*$/',
             Rule::notIn(self::RESERVED_SLUGS),
-            Rule::unique('workspaces', 'slug'),
+            Rule::unique('workspaces', 'slug')->ignore($ignoreId),
         ];
     }
 

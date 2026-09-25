@@ -20,6 +20,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'workspace' => \App\Http\Middleware\ResolveWorkspace::class,
+            'capability' => \App\Http\Middleware\RequiresCapability::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

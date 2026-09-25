@@ -23,16 +23,15 @@ class ResolveWorkspace {
 
         $workspace = Workspace::where('slug', $slug)->first();
 
-        $isMember = $workspace
-            && WorkspaceMember::where('workspace_id', $workspace->id)->where('user_id', $request->user()->id)->exists();
+        $membership = $workspace ? WorkspaceMember::where('workspace_id', $workspace->id)->where('user_id', $request->user()->id)->first()  : null;
 
         // Not found and not yours look the same, so a slug cannot be probed
         // to learn that a workspace exists.
-        if (! $isMember) {
+        if (! $membership) {
             return response()->json(['code' => 'workspace_not_found', 'message' => 'Workspace not found.'], 404);
         }
 
-        app(CurrentWorkspace::class)->set($workspace);
+        app(CurrentWorkspace::class)->set($workspace, $membership);
 
         return $next($request);
     }

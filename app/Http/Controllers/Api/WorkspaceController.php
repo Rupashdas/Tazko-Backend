@@ -60,4 +60,18 @@ class WorkspaceController extends Controller {
     public function show(CurrentWorkspace $current): WorkspaceResource {
         return new WorkspaceResource($current->get());
     }
+
+    /** PATCH /workspace */
+    public function update(Request $request, CurrentWorkspace $current): WorkspaceResource {
+        $workspace = $current->get();
+
+        $validated = $request->validate([
+            'name' => ['sometimes', 'required', 'string', 'max:100'],
+            'slug' => ['sometimes', 'required', ...Workspace::slugRules($workspace->id)],
+        ]);
+
+        $workspace->update($validated);
+
+        return new WorkspaceResource($workspace);
+    }
 }

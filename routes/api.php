@@ -63,6 +63,7 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
 */
 Route::middleware(['auth:sanctum', 'active', 'workspace'])->group(function () {
     Route::get('/workspace', [WorkspaceController::class, 'show']);
+    Route::patch('/workspace', [WorkspaceController::class, 'update'])->middleware('capability:workspace.settings.manage');
 
-    Route::get('/roles', [RoleController::class, 'index']);
+    Route::get('/roles', [RoleController::class, 'index'])->middleware('capability:roles.view');
 });
