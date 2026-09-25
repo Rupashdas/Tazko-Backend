@@ -54,3 +54,12 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::get('/workspaces', [WorkspaceController::class, 'index']);
     Route::post('/workspaces', [WorkspaceController::class, 'store'])->middleware('verified');
 });
+
+/*
+|--------------------------------------------------------------------------
+| Inside a workspace — X-Workspace header required
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth:sanctum', 'active', 'workspace'])->group(function () {
+    Route::get('/workspace', [WorkspaceController::class, 'show']);
+});

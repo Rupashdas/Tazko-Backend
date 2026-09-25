@@ -7,6 +7,7 @@ use App\Http\Resources\WorkspaceResource;
 use App\Http\Resources\WorkspaceSummaryResource;
 use App\Models\Workspace;
 use App\Models\WorkspaceMember;
+use App\Support\CurrentWorkspace;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -49,5 +50,10 @@ class WorkspaceController extends Controller {
         });
 
         return (new WorkspaceResource($workspace))->response()->setStatusCode(201);
+    }
+
+    /** GET /workspace — the workspace named by the X-Workspace header. */
+    public function show(CurrentWorkspace $current): WorkspaceResource {
+        return new WorkspaceResource($current->get());
     }
 }

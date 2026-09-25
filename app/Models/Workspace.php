@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
@@ -14,6 +15,10 @@ class Workspace extends Model {
     ];
 
     protected $fillable = ['name', 'slug', 'owner_id'];
+
+    public function owner(): BelongsTo {
+        return $this->belongsTo(User::class, 'owner_id');
+    }
 
     public function isOwnedBy(User $user): bool {
         return (int) $this->owner_id === (int) $user->id;

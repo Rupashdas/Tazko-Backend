@@ -13,7 +13,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        // One per request (and per queued job), never shared between them.
+        // Middleware and controller ask the container for it and get the
+        // same object, which is how the middleware's answer reaches them.
+        $this->app->scoped(\App\Support\CurrentWorkspace::class);
     }
 
     /**
