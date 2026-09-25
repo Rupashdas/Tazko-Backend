@@ -15,6 +15,10 @@ class Workspace extends Model {
 
     protected $fillable = ['name', 'slug', 'owner_id'];
 
+    public function isOwnedBy(User $user): bool {
+        return (int) $this->owner_id === (int) $user->id;
+    }
+
     /** Validation for a slug someone typed. */
     public static function slugRules(): array {
         return [

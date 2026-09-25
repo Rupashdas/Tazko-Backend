@@ -4,13 +4,27 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\WorkspaceResource;
+use App\Http\Resources\WorkspaceSummaryResource;
 use App\Models\Workspace;
 use App\Models\WorkspaceMember;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 
 class WorkspaceController extends Controller {
+    /** GET /workspaces — every workspace the caller belongs to, for the switcher. */
+    public function index(Request $request): AnonymousResourceCollection {
+        $memberships = WorkspaceMember::query()
+            ->where('user_id', $request->user()->id)
+            ->with('workspace')
+            ->get()
+            ->sortBy(fn (WorkspaceMember $m) => $m->workspace->name)
+            ->values();
+
+        return WorkspaceSummaryResource::collection($memberships);
+    }
+
     /** POST /workspaces — the caller becomes its owner and first member. */
     public function store(Request $request): JsonResponse {
         $validated = $request->validate([
