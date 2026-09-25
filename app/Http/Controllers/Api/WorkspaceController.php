@@ -55,4 +55,9 @@ class WorkspaceController extends Controller {
 
         return (new WorkspaceResource($workspace))->response()->setStatusCode(201);
     }
+
+    /** GET /workspace — the workspace named by the X-Workspace header. */
+    public function show(CurrentWorkspace $current): WorkspaceResource {
+        return new WorkspaceResource($current->get());
+    }
 }
