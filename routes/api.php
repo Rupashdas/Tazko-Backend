@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PreferenceController;
 use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\VerifyEmailController;
+use App\Http\Controllers\Api\WorkspaceController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -45,4 +46,6 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
 
     Route::post('/email/verification-notification', [EmailVerificationNotificationController::class, 'store'])
         ->middleware('throttle:6,1');
+
+    Route::post('/workspaces', [WorkspaceController::class, 'store'])->middleware('verified');
 });
