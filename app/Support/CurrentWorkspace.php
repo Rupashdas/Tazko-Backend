@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Models\Workspace;
+use LogicException;
 
 /**
  * The workspace the current request is acting in. ResolveWorkspace sets it;
@@ -17,5 +18,17 @@ final class CurrentWorkspace {
 
     public function get(): ?Workspace {
         return $this->workspace;
+    }
+
+    public function has(): bool {
+        return $this->workspace !== null;
+    }
+
+    public function id(): int {
+        if ($this->workspace === null) {
+            throw new LogicException('No workspace is set for this request.');
+        }
+
+        return $this->workspace->id;
     }
 }

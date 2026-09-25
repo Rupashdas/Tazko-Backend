@@ -8,6 +8,7 @@ use App\Http\Resources\WorkspaceSummaryResource;
 use App\Models\Workspace;
 use App\Models\WorkspaceMember;
 use App\Support\CurrentWorkspace;
+use App\Support\DefaultRoles;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -18,9 +19,9 @@ class WorkspaceController extends Controller {
     public function index(Request $request): AnonymousResourceCollection {
         $memberships = WorkspaceMember::query()
             ->where('user_id', $request->user()->id)
-            ->with('workspace')
+            ->with(['workspace', 'role'])
             ->get()
-            ->sortBy(fn (WorkspaceMember $m) => $m->workspace->name)
+            ->sortBy(fn(WorkspaceMember $m) => $m->workspace->name)
             ->values();
 
         return WorkspaceSummaryResource::collection($memberships);
@@ -41,19 +42,17 @@ class WorkspaceController extends Controller {
                 'owner_id' => $request->user()->id,
             ]);
 
+            $roles = DefaultRoles::createFor($workspace);
+
             WorkspaceMember::create([
                 'workspace_id' => $workspace->id,
                 'user_id'      => $request->user()->id,
+                'role_id'      => $roles['admin']->id,
             ]);
 
             return $workspace;
         });
 
         return (new WorkspaceResource($workspace))->response()->setStatusCode(201);
-    }
-
-    /** GET /workspace — the workspace named by the X-Workspace header. */
-    public function show(CurrentWorkspace $current): WorkspaceResource {
-        return new WorkspaceResource($current->get());
     }
 }

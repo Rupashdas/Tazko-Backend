@@ -13,6 +13,7 @@ class WorkspaceSummaryResource extends JsonResource {
             'name'     => $this->workspace->name,
             'slug'     => $this->workspace->slug,
             'is_owner' => $this->workspace->isOwnedBy($request->user()),
+            'role'     => $this->role ? ['id' => $this->role->id, 'name' => $this->role->name, 'label' => $this->role->label] : null,
         ];
     }
 }
