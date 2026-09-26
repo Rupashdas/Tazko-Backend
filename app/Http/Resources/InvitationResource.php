@@ -13,6 +13,7 @@ class InvitationResource extends JsonResource {
             'email'      => $this->email,
             'role'       => $this->role ? ['id' => $this->role->id, 'name' => $this->role->name, 'label' => $this->role->label] : null,
             'invited_by' => ['id' => $this->invitedBy->id, 'name' => $this->invitedBy->name],
+            'status'     => $this->status(),
             'expires_at' => $this->expires_at,
             'created_at' => $this->created_at,
         ];

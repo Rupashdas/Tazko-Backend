@@ -79,5 +79,6 @@ Route::middleware(['auth:sanctum', 'active', 'workspace'])->group(function () {
         Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
     });
 
+    Route::get('/invitations', [InvitationController::class, 'index'])->middleware('capability:members.view');
     Route::post('/invitations', [InvitationController::class, 'store'])->middleware('capability:members.invite');
 });

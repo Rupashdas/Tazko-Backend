@@ -10,6 +10,7 @@ use App\Models\WorkspaceMember;
 use App\Support\CurrentWorkspace;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -20,6 +21,12 @@ class InvitationController extends Controller {
     /*---------------------------------------------------------------------------
     | Inside the workspace
     ---------------------------------------------------------------------------*/
+
+    public function index(): AnonymousResourceCollection {
+        return InvitationResource::collection(
+            Invitation::whereNull('accepted_at')->with(['role', 'invitedBy'])->latest()->get()
+        );
+    }
 
     public function store(Request $request, CurrentWorkspace $current): JsonResponse {
         $validated = $request->validate([
