@@ -13,7 +13,7 @@ class Invitation extends Model {
     public const LIFETIME_DAYS = 7;
 
     // No workspace_id: it always comes from CurrentWorkspace via BelongsToWorkspace.
-    protected $fillable = ['email', 'name', 'role_id', 'invited_by', 'token', 'expires_at'];
+    protected $fillable = ['email', 'name', 'role_id', 'invited_by', 'token', 'expires_at', 'accepted_at'];
 
     protected function casts(): array {
         return ['expires_at' => 'datetime'];
