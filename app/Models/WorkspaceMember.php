@@ -13,6 +13,10 @@ class WorkspaceMember extends Model {
         return $this->belongsTo(Workspace::class);
     }
 
+    public function user(): BelongsTo {
+        return $this->belongsTo(User::class);
+    }
+
     public function role(): BelongsTo {
         return $this->belongsTo(Role::class);
     }
