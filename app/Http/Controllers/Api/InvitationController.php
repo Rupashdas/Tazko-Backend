@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\InvitationResource;
 use App\Mail\InvitationMail;
 use App\Models\Invitation;
+use App\Models\User;
 use App\Models\WorkspaceMember;
 use App\Support\CurrentWorkspace;
 use Illuminate\Http\JsonResponse;
@@ -85,6 +86,28 @@ class InvitationController extends Controller {
         $invitation->delete();
 
         return response()->noContent();
+    }
+
+    /*---------------------------------------------------------------------------
+    | Public, and for people who already have an account
+    ---------------------------------------------------------------------------*/
+
+    public function show(string $token): JsonResponse {
+        $invitation = Invitation::where('token', $token)->with(['workspace', 'role', 'invitedBy'])->first();
+
+        abort_if(! $invitation, 404, 'Invitation not found.');
+        abort_if($invitation->isAccepted(), 410, 'This invitation has already been used.');
+        abort_if($invitation->isExpired(), 410, 'This invitation has expired. Ask for a new one.');
+
+        return response()->json(['data' => [
+            'workspace'      => ['name' => $invitation->workspace->name, 'slug' => $invitation->workspace->slug],
+            'name'           => $invitation->name,
+            'email'          => $invitation->email,
+            'role'           => $invitation->role?->label,
+            'invited_by'     => $invitation->invitedBy->name,
+            'expires_at'     => $invitation->expires_at,
+            'account_exists' => User::where('email', $invitation->email)->exists(),
+        ]]);
     }
 
     /*---------------------------------------------------------------------------

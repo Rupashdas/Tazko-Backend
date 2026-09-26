@@ -23,6 +23,8 @@ Route::middleware('throttle:10,1')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::post('/forgot-password', [PasswordResetController::class, 'sendLink']);
     Route::post('/reset-password', [PasswordResetController::class, 'reset']);
+
+    Route::get('/invitations/{token}', [InvitationController::class, 'show']);
 });
 
 // The emailed verification link. `signed` rejects any id or hash that was
