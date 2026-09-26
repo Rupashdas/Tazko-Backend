@@ -11,6 +11,7 @@ use App\Support\CurrentWorkspace;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -76,6 +77,14 @@ class InvitationController extends Controller {
         $this->send($invitation);
 
         return new InvitationResource($invitation);
+    }
+
+    public function destroy(Invitation $invitation): Response {
+        abort_if($invitation->isAccepted(), 422, 'This invitation has already been used.');
+
+        $invitation->delete();
+
+        return response()->noContent();
     }
 
     /*---------------------------------------------------------------------------

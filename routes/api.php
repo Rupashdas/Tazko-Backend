@@ -84,5 +84,6 @@ Route::middleware(['auth:sanctum', 'active', 'workspace'])->group(function () {
     Route::middleware('capability:members.invite')->group(function () {
         Route::post('/invitations', [InvitationController::class, 'store']);
         Route::post('/invitations/{invitation}/resend', [InvitationController::class, 'resend']);
+        Route::delete('/invitations/{invitation}', [InvitationController::class, 'destroy']);
     });
 });
