@@ -3,10 +3,13 @@
 namespace App\Models;
 
 use App\Support\CapabilityRegistry;
+use App\Support\CurrentWorkspace;
 use App\Support\WorkspaceScope;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Facades\DB;
 use InvalidArgumentException;
+use LogicException;
 
 class Role extends Model {
     // workspace_id is fillable so a brand-new workspace can be given its
@@ -16,6 +19,26 @@ class Role extends Model {
     protected static function booted(): void {
         // Every query on roles stays inside the current workspace.
         static::addGlobalScope(new WorkspaceScope());
+
+        // A role made inside a workspace request belongs to that workspace.
+        static::creating(function (Role $role) {
+            if ($role->workspace_id) {
+                return;
+            }
+
+            $current = app(CurrentWorkspace::class);
+
+            // A role with no workspace would belong to everyone and no one.
+            if (! $current->has()) {
+                throw new LogicException('A role needs a workspace: none was given and none is set.');
+            }
+
+            $role->workspace_id = $current->id();
+        });
+    }
+
+    public function members(): HasMany {
+        return $this->hasMany(WorkspaceMember::class);
     }
 
     /** @return list<string> */

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\AuthController;
+use App\Http\Controllers\Api\CapabilityController;
 use App\Http\Controllers\Api\EmailVerificationNotificationController;
 use App\Http\Controllers\Api\PasswordResetController;
 use App\Http\Controllers\Api\PreferenceController;
@@ -65,5 +66,15 @@ Route::middleware(['auth:sanctum', 'active', 'workspace'])->group(function () {
     Route::get('/workspace', [WorkspaceController::class, 'show']);
     Route::patch('/workspace', [WorkspaceController::class, 'update'])->middleware('capability:workspace.settings.manage');
 
-    Route::get('/roles', [RoleController::class, 'index'])->middleware('capability:roles.view');
+    Route::middleware('capability:roles.view')->group(function () {
+        Route::get('/capabilities', [CapabilityController::class, 'index']);
+        Route::get('/roles', [RoleController::class, 'index']);
+        Route::get('/roles/{role}', [RoleController::class, 'show']);
+    });
+
+    Route::middleware('capability:roles.manage')->group(function () {
+        Route::post('/roles', [RoleController::class, 'store']);
+        Route::patch('/roles/{role}', [RoleController::class, 'update']);
+        Route::delete('/roles/{role}', [RoleController::class, 'destroy']);
+    });
 });

@@ -12,6 +12,7 @@ class RoleResource extends JsonResource {
             'name'         => $this->name,
             'label'        => $this->label,
             'capabilities' => $this->capabilityNames(),
+            'members_count' => $this->whenCounted('members'),
         ];
     }
 }
