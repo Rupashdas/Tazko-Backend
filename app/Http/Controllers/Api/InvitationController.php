@@ -59,8 +59,29 @@ class InvitationController extends Controller {
             ]);
         });
 
-        Mail::to($invitation->email)->send(new InvitationMail($invitation->load(['workspace', 'role', 'invitedBy'])));
+        $this->send($invitation);
 
         return (new InvitationResource($invitation))->response()->setStatusCode(201);
+    }
+
+    public function resend(Invitation $invitation): InvitationResource {
+        abort_if($invitation->isAccepted(), 422, 'This invitation has already been used.');
+
+        // A fresh token, so a leaked copy of the old email stops working.
+        $invitation->update([
+            'token'      => Invitation::generateToken(),
+            'expires_at' => now()->addDays(Invitation::LIFETIME_DAYS),
+        ]);
+
+        $this->send($invitation);
+
+        return new InvitationResource($invitation);
+    }
+
+    /*---------------------------------------------------------------------------
+    | Internals
+    ---------------------------------------------------------------------------*/
+    private function send(Invitation $invitation): void {
+        Mail::to($invitation->email)->send(new InvitationMail($invitation->load(['workspace', 'role', 'invitedBy'])));
     }
 }

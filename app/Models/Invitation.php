@@ -39,6 +39,10 @@ class Invitation extends Model {
         return $token;
     }
 
+    public function isAccepted(): bool {
+        return $this->accepted_at !== null;
+    }
+
     public function isExpired(): bool {
         return $this->expires_at->isPast();
     }
