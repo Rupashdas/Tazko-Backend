@@ -14,6 +14,11 @@ use LogicException;
  * projects). Reads are scoped to the current workspace; new rows are
  * stamped with it.
  */
+
+/**
+ * ...
+ * @mixin \Illuminate\Database\Eloquent\Model
+ */
 trait BelongsToWorkspace {
     public static function bootBelongsToWorkspace(): void {
         static::addGlobalScope(new WorkspaceScope());
