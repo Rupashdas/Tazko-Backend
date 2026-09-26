@@ -35,4 +35,10 @@ return [
         ],
     ],
 
+    // Used only by `php artisan postman:sync` (local development).
+    'postman' => [
+        'key' => env('POSTMAN_API_KEY'),
+        'collection' => env('POSTMAN_COLLECTION_ID'),
+    ],
+
 ];
